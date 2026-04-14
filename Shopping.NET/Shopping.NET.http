@@ -1,0 +1,6 @@
+@Shopping.NET_HostAddress = http://localhost:5039
+
+GET {{Shopping.NET_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
