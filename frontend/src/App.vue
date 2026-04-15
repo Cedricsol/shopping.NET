@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
@@ -11,8 +10,8 @@ import HelloWorld from './components/HelloWorld.vue'
       <HelloWorld msg="You did it!" />
 
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/">Boutique</RouterLink>
+        <RouterLink to="/addProduct">Ajouter un produit à la boutique</RouterLink>
       </nav>
     </div>
   </header>
@@ -22,64 +21,55 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <style scoped>
 header {
-  line-height: 1.5;
-  max-height: 100vh;
+  background: linear-gradient(90deg, #ff4081, #7c4dff);
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 5);
 }
 
 .logo {
   display: block;
-  margin: 0 auto 2rem;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+}
+
+.wrapper {
+  text-align: center;
+  margin-top: 10px;
 }
 
 nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
+  margin-top: 10px;
 }
 
 nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
+  margin: 0 10px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: 0.2s;
 }
 
-nav a:first-of-type {
-  border: 0;
+nav a:hover {
+  background: var(--color-accent);
+  color: black;
 }
 
-@media (min-width: 1024px) {
+nav a.router-link-exact-active {
+  background: white;
+  color: black;
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
   header {
     display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+    align-items: center;
+    justify-content: space-between;
   }
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+  .wrapper {
+    text-align: right;
   }
 }
 </style>
