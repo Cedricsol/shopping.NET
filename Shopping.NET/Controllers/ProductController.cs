@@ -13,9 +13,9 @@ namespace Shopping.NET.Controllers
             _dbContext = context;
         }
 
-        [HttpGet]
-        [Route("register")]
-        public IActionResult RegisterProduct(Product product)
+        [HttpPost]
+        [Route("products")]
+        public IActionResult RegisterProduct([FromBody] Product product)
         {
             var canConnect = _dbContext.Database.CanConnect();
             if (!canConnect) {
@@ -24,6 +24,19 @@ namespace Shopping.NET.Controllers
             _dbContext.Add(product);
             _dbContext.SaveChanges();
             return Ok(product);
+        }
+
+        [HttpGet]
+        [Route("products")]
+        public IActionResult GetProducts()
+        {
+            var canConnect = _dbContext.Database.CanConnect();
+            if (!canConnect)
+            {
+                return StatusCode(500, "DB connection failed.");
+            }
+            var products = _dbContext.Products.ToList();
+            return Ok(products);
         }
     }
 }

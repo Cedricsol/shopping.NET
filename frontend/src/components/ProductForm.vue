@@ -1,0 +1,88 @@
+<script setup lang="ts">
+import { postProduct, type Product } from '@/services/productService'
+import axios from 'axios'
+import { ref } from 'vue'
+
+const product = ref<Product>({
+  name: '',
+  price: 0,
+  imageUrl: '',
+})
+
+const message = ref<string | null>(null)
+const error = ref<string | null>(null)
+
+const submitProduct = async () => {
+  message.value = null
+  error.value = null
+
+  try {
+    await postProduct(product.value)
+    message.value = 'Produit ajouté au shop !'
+
+    //reset form
+    product.value = {
+      name: '',
+      price: 0,
+      imageUrl: '',
+    }
+  } catch (err) {
+    error.value = "Erreur lors de l'ajout du produit"
+  }
+}
+</script>
+
+<template>
+  <div class="container">
+    <h1>Ajouter un produit au shop</h1>
+
+    <form @submit.prevent="submitProduct" class="form">
+      <input v-model="product.name" type="text" placeholder="Nom du produit" required />
+      <input
+        v-model.number="product.price"
+        type="number"
+        step="0.01"
+        placeholder="Prix du produit"
+        required
+      />
+      <input v-model="product.imageUrl" type="text" placeholder="URL de l'image" required />
+      <button type="submit">Ajouter</button>
+    </form>
+    <p v-if="message" class="success">{{ message }}</p>
+    <p v-if="error" class="error">{{ error }}</p>
+  </div>
+</template>
+
+<style scoped>
+.container {
+  padding: 20px;
+  max-width: 400px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input {
+  padding: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px;
+  background-color: #42b883;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.success {
+  color: green;
+}
+
+.error {
+  color: red;
+}
+</style>
