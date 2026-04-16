@@ -70,10 +70,10 @@ npm run test:unit
 - Entity Framework Core
 - SQL Server
 - Vue 3
+- Xunit
 
 # Remaining work to do
 
-- Add tests
-- Add authentication and only admins can add products
+- Add authentication so that only admins can add products
 - Add a cart
 - Image Uploading
