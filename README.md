@@ -50,6 +50,20 @@ npm run dev
 
 When adding a product, you can add an image. Images need to be placed under the "frontend/public/images" directory. And you need to put "/images/file-name.extension" in the input form.
 
+# Tests
+
+To run the backend tests, run the following commands from the root directory : 
+```
+cd Shopping.NET.Tests
+dotnet test
+```
+
+To run the frontend tests, run the following command from the frontend directory :
+```
+npm run test:unit
+```
+
+
 # Technologies Used
 
 - ASP.NET Core
