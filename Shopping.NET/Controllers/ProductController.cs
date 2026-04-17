@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Shopping.NET.Models;
+using Shopping.NET.Services;
 
 namespace Shopping.NET.Controllers
 {
@@ -7,36 +8,40 @@ namespace Shopping.NET.Controllers
     [Route("api")]
     public class ProductController : ControllerBase
     {
-        private readonly AppDbContext _dbContext;
-        public ProductController (AppDbContext context)
+        private readonly IProductService _productService;
+        public ProductController (IProductService service )
         {
-            _dbContext = context;
+           _productService  = service;
         }
 
         [HttpPost]
         [Route("products")]
         public IActionResult RegisterProduct([FromBody] Product product)
         {
-            var canConnect = _dbContext.Database.CanConnect();
-            if (!canConnect) {
-                return StatusCode(500, "DB connection failed.");
+            try
+            {
+                var createdProduct = _productService.CreateProduct(product);
+                return Ok(createdProduct);
             }
-            _dbContext.Add(product);
-            _dbContext.SaveChanges();
-            return Ok(product);
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("products")]
         public IActionResult GetProducts()
         {
-            var canConnect = _dbContext.Database.CanConnect();
-            if (!canConnect)
+            try
             {
-                return StatusCode(500, "DB connection failed.");
+                var products = _productService.GetAllProducts();
+                return Ok(products);
             }
-            var products = _dbContext.Products.ToList();
-            return Ok(products);
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }
