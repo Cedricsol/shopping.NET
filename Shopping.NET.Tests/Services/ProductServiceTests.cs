@@ -1,5 +1,5 @@
-﻿
-
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using Shopping.NET.Models;
 using Shopping.NET.Services;
 
@@ -12,7 +12,8 @@ namespace Shopping.NET.Tests.Services
         {
             // Setup
             var context = TestDbContextFactory.Create();
-            var service = new ProductService(context);
+            var mockLogger = new Mock<ILogger<ProductService>>();
+            var service = new ProductService(context, mockLogger.Object);
 
             var product = new Product
             {
@@ -33,12 +34,13 @@ namespace Shopping.NET.Tests.Services
         {
             // Setup
             var context = TestDbContextFactory.Create();
+            var mockLogger = new Mock<ILogger<ProductService>>();
 
             context.Products.Add(new Product { Name = "P1", Price = 10, ImageUrl = "p1.jpg"});
             context.Products.Add(new Product { Name = "P2", Price = 42, ImageUrl = "p2.jpg" });
             context.SaveChanges();
 
-            var service = new ProductService(context);
+            var service = new ProductService(context, mockLogger.Object);
 
             var result = service.GetAllProducts();
 
