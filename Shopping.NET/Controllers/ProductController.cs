@@ -5,7 +5,7 @@ using Shopping.NET.Services;
 namespace Shopping.NET.Controllers
 {
     [ApiController]
-    [Route("api")]
+    [Route("api/products")]
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
@@ -15,7 +15,6 @@ namespace Shopping.NET.Controllers
         }
 
         [HttpPost]
-        [Route("products")]
         public IActionResult RegisterProduct([FromBody] Product product)
         {
             try
@@ -30,7 +29,6 @@ namespace Shopping.NET.Controllers
         }
 
         [HttpGet]
-        [Route("products")]
         public IActionResult GetProducts()
         {
             try
