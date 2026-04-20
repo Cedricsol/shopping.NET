@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Shopping.NET.Services;
 
@@ -36,6 +37,21 @@ app.UseCors("AllowVueApp");
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+// Add middleware to handle errors
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(exceptionHandlerPathFeature?.Error, "Unhandled Exception");
+
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync("An error occured");
+    });
+});
 
 app.MapControllers();
 

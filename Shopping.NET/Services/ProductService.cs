@@ -1,4 +1,5 @@
-﻿using Shopping.NET.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Shopping.NET.Models;
 
 namespace Shopping.NET.Services
 {
@@ -13,33 +14,22 @@ namespace Shopping.NET.Services
             _logger = logger;
         }
 
-        public Product CreateProduct(Product product)
+        public async Task<Product> CreateProduct(Product product)
         {
-            if (!_dbContext.Database.CanConnect())
-            {
-                _logger.LogError("Database connection failed");
-                throw new Exception("DB connection failed");
-            }
-
             _dbContext.Products.Add(product);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             _logger.LogInformation("Product created with ID: {Id}", product.Id);
 
             return product;
         }
 
-        public List<Product> GetAllProducts()
+        public async Task<List<Product>> GetAllProducts()
         {
-            if (!_dbContext.Database.CanConnect())
-            {
-                _logger.LogError("Database connection failed");
-                throw new Exception("DB connection failed");
-            }
+            var products = await _dbContext.Products.ToListAsync();
+            _logger.LogInformation("Size of the list of products : " + products.Count());
 
-            _logger.LogInformation("Size of the list of products : " + _dbContext.Products.ToList().Count().ToString());
-
-            return _dbContext.Products.ToList();
+            return products;
         }
     }
 }

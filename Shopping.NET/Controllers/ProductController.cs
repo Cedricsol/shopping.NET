@@ -15,31 +15,19 @@ namespace Shopping.NET.Controllers
         }
 
         [HttpPost]
-        public IActionResult RegisterProduct([FromBody] Product product)
+        public async Task<IActionResult> RegisterProduct([FromBody] Product product)
         {
-            try
-            {
-                var createdProduct = _productService.CreateProduct(product);
-                return Ok(createdProduct);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var createdProduct = await _productService.CreateProduct(product);
+            return Ok(createdProduct);
+            
         }
 
         [HttpGet]
-        public IActionResult GetProducts()
+        public async  Task<IActionResult> GetProducts()
         {
-            try
-            {
-                var products = _productService.GetAllProducts();
-                return Ok(products);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            var products = await _productService.GetAllProducts();
+            return Ok(products);
+            
         }
     }
 }

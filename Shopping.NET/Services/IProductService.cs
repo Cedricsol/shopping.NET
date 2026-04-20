@@ -4,7 +4,7 @@ namespace Shopping.NET.Services
 {
     public interface IProductService
     {
-        Product CreateProduct(Product product);
-        List<Product> GetAllProducts();
+        Task<Product> CreateProduct(Product product);
+        Task<List<Product>> GetAllProducts();
     }
 }
