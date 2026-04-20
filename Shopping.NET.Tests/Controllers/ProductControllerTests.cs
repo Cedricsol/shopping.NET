@@ -9,7 +9,7 @@ namespace Shopping.NET.Tests.Controllers
     public class ProductControllerTests
     {
         [Fact]
-        public void RegisterProduct_Should_Add_Product_And_Return_Ok()
+        public async Task RegisterProduct_Should_Add_Product_And_Return_Ok()
         {
             // Setup
             var mockService = new Mock<IProductService>();
@@ -23,12 +23,12 @@ namespace Shopping.NET.Tests.Controllers
 
             mockService
                 .Setup(s => s.CreateProduct(product))
-                .Returns(product);
+                .ReturnsAsync(product);
 
             var controller = new ProductController(mockService.Object);
 
 
-            var result = controller.RegisterProduct(product);
+            var result = await controller.RegisterProduct(product);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -38,7 +38,7 @@ namespace Shopping.NET.Tests.Controllers
         }
 
         [Fact]
-        public void GetProducts_Should_Return_All_Products()
+        public async Task GetProducts_Should_Return_All_Products()
         {
             // Setup
             var mockService = new Mock<IProductService>();
@@ -51,11 +51,11 @@ namespace Shopping.NET.Tests.Controllers
 
             mockService
                 .Setup(s => s.GetAllProducts())
-                .Returns(fakeProducts);
+                .ReturnsAsync(fakeProducts);
 
             var controller = new ProductController(mockService.Object);
 
-            var result = controller.GetProducts();
+            var result = await controller.GetProducts();
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);

@@ -8,7 +8,7 @@ namespace Shopping.NET.Tests.Services
     public class ProductServiceTests
     {
         [Fact]
-        public void CreateProduct_Should_Add_Product_To_Db()
+        public async Task CreateProduct_Should_Add_Product_To_Db()
         {
             // Setup
             var context = TestDbContextFactory.Create();
@@ -22,7 +22,7 @@ namespace Shopping.NET.Tests.Services
                 ImageUrl = "test.jpg",
             };
 
-            var result = service.CreateProduct(product);
+            var result = await service.CreateProduct(product);
 
             // Assert
             Assert.Equal(1, context.Products.Count());
@@ -30,7 +30,7 @@ namespace Shopping.NET.Tests.Services
         }
 
         [Fact]
-        public void GetAllProducts_Should_Return_All_Products()
+        public async Task GetAllProducts_Should_Return_All_Products()
         {
             // Setup
             var context = TestDbContextFactory.Create();
@@ -38,11 +38,11 @@ namespace Shopping.NET.Tests.Services
 
             context.Products.Add(new Product { Name = "P1", Price = 10, ImageUrl = "p1.jpg"});
             context.Products.Add(new Product { Name = "P2", Price = 42, ImageUrl = "p2.jpg" });
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             var service = new ProductService(context, mockLogger.Object);
 
-            var result = service.GetAllProducts();
+            var result = await service.GetAllProducts();
 
             Assert.Equal(2, result.Count);
             Assert.Equal("P1", result[0].Name);
