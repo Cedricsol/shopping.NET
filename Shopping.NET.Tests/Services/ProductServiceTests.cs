@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
+using Shopping.NET.DTOs;
 using Shopping.NET.Models;
 using Shopping.NET.Services;
 
@@ -15,7 +16,7 @@ namespace Shopping.NET.Tests.Services
             var mockLogger = new Mock<ILogger<ProductService>>();
             var service = new ProductService(context, mockLogger.Object);
 
-            var product = new Product
+            var product = new CreateProductDto
             {
                 Name = "Test",
                 Price = 10,

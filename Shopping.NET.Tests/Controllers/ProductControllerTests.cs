@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Shopping.NET.Controllers;
-using Shopping.NET.Models;
+using Shopping.NET.DTOs;
 using Shopping.NET.Services;
 
 namespace Shopping.NET.Tests.Controllers
@@ -14,8 +14,16 @@ namespace Shopping.NET.Tests.Controllers
             // Setup
             var mockService = new Mock<IProductService>();
 
-            var product = new Product
+            var product = new CreateProductDto
             {
+                Name = "Test",
+                Price = 10,
+                ImageUrl = "img.jpg",
+            };
+
+            var returnedDto = new ProductDto
+            {
+                Id = 1,
                 Name = "Test",
                 Price = 10,
                 ImageUrl = "img.jpg",
@@ -23,7 +31,7 @@ namespace Shopping.NET.Tests.Controllers
 
             mockService
                 .Setup(s => s.CreateProduct(product))
-                .ReturnsAsync(product);
+                .ReturnsAsync(returnedDto);
 
             var controller = new ProductController(mockService.Object);
 
@@ -32,7 +40,7 @@ namespace Shopping.NET.Tests.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedProduct = Assert.IsType<Product>(okResult.Value);
+            var returnedProduct = Assert.IsType<ProductDto>(okResult.Value);
 
             Assert.Equal("Test", returnedProduct.Name);
         }
@@ -43,10 +51,10 @@ namespace Shopping.NET.Tests.Controllers
             // Setup
             var mockService = new Mock<IProductService>();
 
-            var fakeProducts = new List<Product>
+            var fakeProducts = new List<ProductDto>
             {
-                new Product {Name = "P1", Price = 10, ImageUrl = "p1.jpg"},
-                new Product {Name = "P2", Price = 42, ImageUrl = "p2.jpg"}
+                new ProductDto {Name = "P1", Price = 10, ImageUrl = "p1.jpg"},
+                new ProductDto {Name = "P2", Price = 42, ImageUrl = "p2.jpg"}
             };
 
             mockService
@@ -59,7 +67,7 @@ namespace Shopping.NET.Tests.Controllers
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var products = Assert.IsType<List<Product>>(okResult.Value);
+            var products = Assert.IsType<List<ProductDto>>(okResult.Value);
 
             Assert.Equal(2, products.Count);
         }
