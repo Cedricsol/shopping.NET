@@ -50,8 +50,13 @@ const submitProduct = async () => {
       price: 0,
       imageUrl: '',
     }
-  } catch (err) {
-    error.value = "Erreur lors de l'ajout du produit"
+  } catch (err: any) {
+    if (err.response?.data?.errors) {
+      const backendErrors = err.response.data.errors
+      error.value = Object.values(backendErrors).flat().join(', ')
+    } else {
+      error.value = "Erreur lors de l'ajout du produit"
+    }
   }
 }
 </script>
