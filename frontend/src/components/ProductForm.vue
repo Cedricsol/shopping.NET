@@ -12,9 +12,33 @@ const product = ref<Product>({
 const message = ref<string | null>(null)
 const error = ref<string | null>(null)
 
+const validateProduct = () => {
+  if (!product.value.name.trim()) {
+    return 'Veuillez entrer un nom'
+  }
+
+  if (product.value.price < 0) {
+    product.value.price = -product.value.price
+    return 'Le prix ne doit pas être négatif'
+  }
+
+  if (!product.value.imageUrl.trim()) {
+    return "Veuillez entrer un chemin d'accès pour l'image sous le format '/images/file-name.extension'"
+  }
+
+  return null
+}
+
 const submitProduct = async () => {
   message.value = null
   error.value = null
+
+  const validateError = validateProduct()
+
+  if (validateError) {
+    error.value = validateError
+    return
+  }
 
   try {
     await postProduct(product.value)
@@ -37,7 +61,7 @@ const submitProduct = async () => {
     <h1>Ajouter un produit au shop</h1>
 
     <form @submit.prevent="submitProduct" class="form">
-      <input v-model="product.name" type="text" placeholder="Nom du produit" required />
+      <input v-model="product.name" type="text" placeholder="Nom du produit" />
       <input
         v-model.number="product.price"
         type="number"
@@ -45,7 +69,7 @@ const submitProduct = async () => {
         placeholder="Prix du produit"
         required
       />
-      <input v-model="product.imageUrl" type="text" placeholder="URL de l'image" required />
+      <input v-model="product.imageUrl" type="text" placeholder="URL de l'image" />
       <button type="submit">Ajouter</button>
     </form>
     <p v-if="message" class="success">{{ message }}</p>
