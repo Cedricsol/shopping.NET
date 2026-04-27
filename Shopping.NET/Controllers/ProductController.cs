@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Shopping.NET.DTOs;
 using Shopping.NET.Models;
 using Shopping.NET.Services;
 
@@ -15,7 +16,7 @@ namespace Shopping.NET.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterProduct([FromBody] Product product)
+        public async Task<IActionResult> RegisterProduct([FromBody] CreateProductDto product)
         {
             var createdProduct = await _productService.CreateProduct(product);
             return Ok(createdProduct);
@@ -27,7 +28,6 @@ namespace Shopping.NET.Controllers
         {
             var products = await _productService.GetAllProducts();
             return Ok(products);
-            
         }
     }
 }

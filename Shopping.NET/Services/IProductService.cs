@@ -1,10 +1,10 @@
-﻿using Shopping.NET.Models;
+﻿using Shopping.NET.DTOs;
 
 namespace Shopping.NET.Services
 {
     public interface IProductService
     {
-        Task<Product> CreateProduct(Product product);
-        Task<List<Product>> GetAllProducts();
+        Task<ProductDto> CreateProduct(CreateProductDto product);
+        Task<List<ProductDto>> GetAllProducts();
     }
 }
