@@ -66,15 +66,26 @@ const submitProduct = async () => {
     <h1>Ajouter un produit au shop</h1>
 
     <form @submit.prevent="submitProduct" class="form">
-      <input v-model="product.name" type="text" placeholder="Nom du produit" />
       <input
+        data-testid="product-name"
+        v-model="product.name"
+        type="text"
+        placeholder="Nom du produit"
+      />
+      <input
+        data-testid="product-price"
         v-model.number="product.price"
         type="number"
         step="0.01"
         placeholder="Prix du produit"
         required
       />
-      <input v-model="product.imageUrl" type="text" placeholder="URL de l'image" />
+      <input
+        data-testid="product-image"
+        v-model="product.imageUrl"
+        type="text"
+        placeholder="URL de l'image"
+      />
       <button type="submit">Ajouter</button>
     </form>
     <p v-if="message" class="success">{{ message }}</p>

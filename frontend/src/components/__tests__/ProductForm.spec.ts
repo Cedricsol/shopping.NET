@@ -18,9 +18,9 @@ describe('ProductForm.vue', () => {
     const wrapper = mount(ProductForm)
 
     expect(wrapper.find('h1').text()).toBe('Ajouter un produit au shop')
-    expect(wrapper.find('input[placeholder="Nom du produit"]').exists()).toBe(true)
-    expect(wrapper.find('input[placeholder="Prix du produit"]').exists()).toBe(true)
-    expect(wrapper.find('input[placeholder="URL de l\'image"]').exists()).toBe(true)
+    expect(wrapper.find('input[data-testid="product-name"]').exists()).toBe(true)
+    expect(wrapper.find('input[data-testid="product-price"]').exists()).toBe(true)
+    expect(wrapper.find('input[data-testid="product-image"]').exists()).toBe(true)
     expect(wrapper.find('button').text()).toBe('Ajouter')
   })
 
@@ -38,9 +38,9 @@ describe('ProductForm.vue', () => {
     })
 
     // Fill form
-    await wrapper.find('input[placeholder="Nom du produit"]').setValue('Produit test')
-    await wrapper.find('input[placeholder="Prix du produit"]').setValue('10')
-    await wrapper.find('input[placeholder="URL de l\'image"]').setValue('http://image.com')
+    await wrapper.find('input[data-testid="product-name"]').setValue('Produit test')
+    await wrapper.find('input[data-testid="product-price"]').setValue('10')
+    await wrapper.find('input[data-testid="product-image"]').setValue('http://image.com')
 
     // Submit form
     await wrapper.find('form').trigger('submit.prevent')
@@ -69,9 +69,9 @@ describe('ProductForm.vue', () => {
 
     vi.spyOn(productService, 'postProduct').mockRejectedValueOnce(new Error('API error'))
 
-    await wrapper.find('input[placeholder="Nom du produit"]').setValue('Produit test')
-    await wrapper.find('input[placeholder="Prix du produit"]').setValue('10')
-    await wrapper.find('input[placeholder="URL de l\'image"]').setValue('/images/test.jpg')
+    await wrapper.find('input[data-testid="product-name"]').setValue('Produit test')
+    await wrapper.find('input[data-testid="product-price"]').setValue('10')
+    await wrapper.find('input[data-testid="product-image"]').setValue('/images/test.jpg')
 
     await wrapper.find('form').trigger('submit.prevent')
 
@@ -84,8 +84,8 @@ describe('ProductForm.vue', () => {
   it('Display validation error if name is empty', async () => {
     const wrapper = mount(ProductForm)
 
-    await wrapper.find('input[placeholder="Prix du produit"]').setValue('10')
-    await wrapper.find('input[placeholder="URL de l\'image"]').setValue('/images/test.jpg')
+    await wrapper.find('input[data-testid="product-price"]').setValue('10')
+    await wrapper.find('input[data-testid="product-image"]').setValue('/images/test.jpg')
 
     await wrapper.find('form').trigger('submit.prevent')
 
@@ -96,9 +96,9 @@ describe('ProductForm.vue', () => {
   it('Display validation error if price is negative', async () => {
     const wrapper = mount(ProductForm)
 
-    await wrapper.find('input[placeholder="Nom du produit"]').setValue('Produit test')
-    await wrapper.find('input[placeholder="Prix du produit"]').setValue('-10')
-    await wrapper.find('input[placeholder="URL de l\'image"]').setValue('/images/test.jpg')
+    await wrapper.find('input[data-testid="product-name"]').setValue('Produit test')
+    await wrapper.find('input[data-testid="product-price"]').setValue('-10')
+    await wrapper.find('input[data-testid="product-image"]').setValue('/images/test.jpg')
 
     await wrapper.find('form').trigger('submit.prevent')
 
@@ -109,8 +109,8 @@ describe('ProductForm.vue', () => {
   it('Display validation error if image URL is empty', async () => {
     const wrapper = mount(ProductForm)
 
-    await wrapper.find('input[placeholder="Nom du produit"]').setValue('Produit test')
-    await wrapper.find('input[placeholder="Prix du produit"]').setValue('10')
+    await wrapper.find('input[data-testid="product-name"]').setValue('Produit test')
+    await wrapper.find('input[data-testid="product-price"]').setValue('10')
 
     await wrapper.find('form').trigger('submit.prevent')
 
