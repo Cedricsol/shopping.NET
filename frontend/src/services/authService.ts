@@ -25,9 +25,9 @@ export interface AuthResponse {
 }
 
 export function register(register: RegisterDto) {
-  return api.post<AuthResponse>(`/auth/register`, register)
+  return api.post<AuthResponse>('/auth/register', register)
 }
 
 export function login(login: LoginDto) {
-  return axios.post<AuthResponse>(`/auth/login`, login)
+  return api.post<AuthResponse>('/auth/login', login)
 }

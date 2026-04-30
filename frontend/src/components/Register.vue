@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { register, type RegisterDto } from '@/services/authService'
+import { useAuthStore } from '@/stores/authStore'
+import axios from 'axios'
 import { ref } from 'vue'
+
+const authStore = useAuthStore()
 
 const registerValue = ref<RegisterDto>({
   email: '',
@@ -41,7 +45,7 @@ const submitRegister = async () => {
   }
 
   try {
-    await register(registerValue.value)
+    await authStore.registerUser(registerValue.value)
     message.value = 'Compte crée !'
 
     //reset form
@@ -51,19 +55,14 @@ const submitRegister = async () => {
       password: '',
     }
   } catch (err: any) {
-    if (err.response?.data?.errors) {
-      const backendErrors = err.response.data.errors
-      error.value = Object.values(backendErrors).flat().join(', ')
-    } else {
-      error.value = 'Erreur lors de la création du compte'
-    }
+    error.value = err
   }
 }
 </script>
 
 <template>
   <div class="container">
-    <h1>Connexion</h1>
+    <h1>Créer un compte</h1>
 
     <form @submit.prevent="submitRegister" class="form">
       <input
@@ -84,7 +83,7 @@ const submitRegister = async () => {
         type="password"
         placeholder="Mot de passe"
       />
-      <button type="submit">Se connecter</button>
+      <button type="submit">Créer un compte</button>
     </form>
     <p v-if="message" class="success">{{ message }}</p>
     <p v-if="error" class="error">{{ error }}</p>

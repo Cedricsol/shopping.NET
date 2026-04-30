@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { login, type LoginDto } from '@/services/authService'
+import { type LoginDto } from '@/services/authService'
+import { useAuthStore } from '@/stores/authStore'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+const authStore = useAuthStore()
+const router = useRouter()
 
 const loginValue = ref<LoginDto>({
   email: '',
@@ -36,7 +41,7 @@ const submitLogin = async () => {
   }
 
   try {
-    await login(loginValue.value)
+    await authStore.loginUser(loginValue.value)
     message.value = 'Connexion réussie !'
 
     //reset form
@@ -44,13 +49,9 @@ const submitLogin = async () => {
       email: '',
       password: '',
     }
+    router.push('/')
   } catch (err: any) {
-    if (err.response?.data?.errors) {
-      const backendErrors = err.response.data.errors
-      error.value = Object.values(backendErrors).flat().join(', ')
-    } else {
-      error.value = 'Erreur lors de la connexion'
-    }
+    error.value = err
   }
 }
 </script>
