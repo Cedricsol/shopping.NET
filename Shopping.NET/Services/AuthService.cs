@@ -24,7 +24,7 @@ namespace Shopping.NET.Services
             _configuration = configuration;
         }
 
-        public async Task<UserDto> Register(RegisterDto registerDto)
+        public async Task<AuthResponseDto> Register(RegisterDto registerDto)
         {
             // Check if user already exists
             var existingUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == registerDto.Email.ToLower().Trim());

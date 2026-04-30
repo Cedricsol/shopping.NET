@@ -4,7 +4,7 @@ namespace Shopping.NET.Services
 {
     public interface IAuthService
     {
-        Task<UserDto> Register(RegisterDto registerDto);
+        Task<AuthResponseDto> Register(RegisterDto registerDto);
         Task<AuthResponseDto> Login(LoginDto loginDto);
     }
 }
