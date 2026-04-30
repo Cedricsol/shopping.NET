@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { postProduct, type Product } from '@/services/productService'
+import axios from 'axios'
 import { ref } from 'vue'
 
 const product = ref<Product>({
@@ -50,11 +51,15 @@ const submitProduct = async () => {
       imageUrl: '',
     }
   } catch (err: any) {
-    if (err.response?.data?.errors) {
-      const backendErrors = err.response.data.errors
-      error.value = Object.values(backendErrors).flat().join(', ')
+    if (axios.isAxiosError(err)) {
+      if (err.response?.data?.errors) {
+        const backendErrors = err.response.data.errors
+        error.value = Object.values(backendErrors).flat().join(', ')
+      } else {
+        error.value = 'Erreur lors de la création du compte'
+      }
     } else {
-      error.value = "Erreur lors de l'ajout du produit"
+      error.value = 'Erreur inconnue'
     }
   }
 }
