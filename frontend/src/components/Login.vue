@@ -76,6 +76,8 @@ const submitLogin = async () => {
     </form>
     <p v-if="message" class="success">{{ message }}</p>
     <p v-if="error" class="error">{{ error }}</p>
+    <p>Pas encore de compte ?</p>
+    <RouterLink to="/register">Créer un compte</RouterLink>
   </div>
 </template>
 
