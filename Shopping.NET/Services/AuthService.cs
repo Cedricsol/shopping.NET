@@ -46,12 +46,15 @@ namespace Shopping.NET.Services
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync();
             _logger.LogInformation("User created with email : {Email}", user.Email);
+            var token = GenerateJwtToken(user);
+            _logger.LogInformation("Token created");
 
-            return new UserDto
+            return new AuthResponseDto
             {
-                Id = user.Id,
+                Token = token,
                 Email = user.Email,
                 Username = user.Username,
+                Role = user.Role
             };
         }
 
