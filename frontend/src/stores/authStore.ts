@@ -8,6 +8,7 @@ import {
 import { getToken, removeToken, setToken } from '@/services/tokenService'
 import axios from 'axios'
 import { defineStore } from 'pinia'
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as AuthResponse | null,
