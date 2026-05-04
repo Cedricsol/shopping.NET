@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Shopping.NET.DTOs;
-using Shopping.NET.Models;
 using Shopping.NET.Services;
 
 namespace Shopping.NET.Controllers

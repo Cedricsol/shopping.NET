@@ -77,7 +77,7 @@ describe('ProductForm.vue', () => {
 
     expect(productService.postProduct).toHaveBeenCalled()
 
-    expect(wrapper.text()).toContain("Erreur lors de l'ajout du produit")
+    expect(wrapper.text()).toContain('Erreur inconnue')
   })
 
   //#region Test frontend validation
