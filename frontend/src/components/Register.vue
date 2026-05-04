@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { register, type RegisterDto } from '@/services/authService'
 import { useAuthStore } from '@/stores/authStore'
-import axios from 'axios'
 import { ref } from 'vue'
 
 const authStore = useAuthStore()

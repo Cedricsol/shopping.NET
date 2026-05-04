@@ -1,7 +1,7 @@
 import Login from '@/components/Login.vue'
 import { useAuthStore } from '@/stores/authStore'
 import { flushPromises, mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/stores/authStore', () => ({
   useAuthStore: vi.fn(),
@@ -15,6 +15,9 @@ vi.mock('vue-router', () => ({
 }))
 
 describe('Login.vue', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
   it('should render login form correctly', () => {
     const wrapper = mount(Login)
 
