@@ -56,7 +56,7 @@ const submitProduct = async () => {
         const backendErrors = err.response.data.errors
         error.value = Object.values(backendErrors).flat().join(', ')
       } else {
-        error.value = 'Erreur lors de la création du compte'
+        error.value = "Erreur lors de l'ajout du produit"
       }
     } else {
       error.value = 'Erreur inconnue'
