@@ -66,7 +66,7 @@ describe('Register.vue', () => {
 
     await wrapper.find('[data-testid="register-email"]').setValue('test@test.com')
     await wrapper.find('[data-testid="register-username"]').setValue('test')
-    await wrapper.find('[data-testid="register-password"]').setValue('test')
+    await wrapper.find('[data-testid="register-password"]').setValue('Test123&')
 
     await wrapper.find('form').trigger('submit.prevent')
     await flushPromises()
@@ -74,7 +74,7 @@ describe('Register.vue', () => {
     expect(registerMock).toHaveBeenCalledWith({
       email: 'test@test.com',
       username: 'test',
-      password: 'test',
+      password: 'Test123&',
     })
     expect(wrapper.text()).toContain('Compte crée !')
   })
@@ -90,7 +90,7 @@ describe('Register.vue', () => {
 
     await wrapper.find('[data-testid="register-email"]').setValue('test@test.com')
     await wrapper.find('[data-testid="register-username"]').setValue('test')
-    await wrapper.find('[data-testid="register-password"]').setValue('wrong password')
+    await wrapper.find('[data-testid="register-password"]').setValue('Wrong password1&')
 
     await wrapper.find('form').trigger('submit.prevent')
     await flushPromises()
@@ -113,7 +113,7 @@ describe('Register.vue', () => {
 
     await email.setValue('test@test.com')
     await username.setValue('test')
-    await password.setValue('test')
+    await password.setValue('Test123&')
 
     await wrapper.find('form').trigger('submit.prevent')
     await flushPromises()
