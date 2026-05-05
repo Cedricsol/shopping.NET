@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Shopping.NET.Exceptions;
 using Shopping.NET.Models;
 using Shopping.NET.Services;
 using System.Text;
@@ -79,13 +80,20 @@ app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
     {
-        var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
-
+        var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
         var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-        logger.LogError(exceptionHandlerPathFeature?.Error, "Unhandled Exception");
 
+        logger.LogError(exception, "Unhandled Exception");
+        context.Response.ContentType = "application/json";
+
+        if (exception is ApiException apiEx)
+        {
+            context.Response.StatusCode = apiEx.StatusCode;
+            await context.Response.WriteAsJsonAsync(new { message = apiEx.Message });
+            return;
+        }
         context.Response.StatusCode = 500;
-        await context.Response.WriteAsync("An error occured");
+        await context.Response.WriteAsJsonAsync(new { message = "Erreur interne serveur" });
     });
 });
 

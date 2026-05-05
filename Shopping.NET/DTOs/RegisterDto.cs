@@ -12,7 +12,7 @@ namespace Shopping.NET.DTOs
         [Required(ErrorMessage = "Veuillez entrer un nom d'utilsateur")]
         [MinLength(3, ErrorMessage = "Le nom d'utilisateur doit contenir au minimum 3 caractères")]
         [MaxLength(50, ErrorMessage = "Le nom d'utilisateur est trop long")]
-        [RegularExpression(@"^[a-zA-Z0-9_-+$", ErrorMessage = "Cararctères invalides")]
+        [RegularExpression(@"^[a-zA-Z0-9_-]+$", ErrorMessage = "Cararctères invalides")]
         public string Username { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Veuillez entrer un mot de passe")]

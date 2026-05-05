@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Shopping.NET.DTOs;
+using Shopping.NET.Exceptions;
 using Shopping.NET.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -32,12 +33,12 @@ namespace Shopping.NET.Services
             // Check if user already exists
             if (await _dbContext.Users.AnyAsync(u => u.Email == email))
             {
-                throw new Exception("Email déjà utilisé");
+                throw new ApiException("Email déjà utilisé", 400);
             }
 
             if (await _dbContext.Users.AnyAsync(u => u.Username == username))
             {
-                throw new Exception("Nom d'utilisateur déjà pris");
+                throw new ApiException("Nom d'utilisateur déjà pris", 400);
             }
 
             // Password validation
@@ -46,14 +47,14 @@ namespace Shopping.NET.Services
                 !Regex.IsMatch(registerDto.Password, @"[0-9]") ||
                 !Regex.IsMatch(registerDto.Password, @"[!@#$%^&*/]"))
             {
-                throw new Exception("Mot de passe trop faible");
+                throw new ApiException("Mot de passe trop faible", 400);
             }
 
             // Then create a new user
             var user = new User
             {
-                Username = registerDto.Username,
-                Email = registerDto.Email.ToLower().Trim(),
+                Username = username,
+                Email  = email,
             };
             user.PasswordHash = _passwordHasher.HashPassword(user, registerDto.Password);
 
@@ -77,14 +78,14 @@ namespace Shopping.NET.Services
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email.ToLower().Trim());
             if (user == null)
             {
-                throw new Exception("Invalid credentials");
+                throw new ApiException("Invalid credentials", 401);
             }
             var passwordCheck = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginDto.Password);
             if (passwordCheck == PasswordVerificationResult.Failed)
             {
                 // Wrong password
                 _logger.LogWarning("Failed login attempt for email {Email}", loginDto.Email);
-                throw new Exception("Invalid credentials");
+                throw new ApiException("Invalid credentials", 401);
             }
             _logger.LogInformation("User logged in : {Email}", user.Email);
             var token = GenerateJwtToken(user);
@@ -110,7 +111,7 @@ namespace Shopping.NET.Services
             var keyString = _configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(keyString))
             {
-                throw new Exception("JWT Key is missing");
+                throw new ApiException("JWT Key is missing", 400);
             }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
 
