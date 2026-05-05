@@ -15,15 +15,15 @@ const message = ref<string | null>(null)
 const errors = ref<Partial<Record<keyof RegisterDto, string | null>>>({})
 
 const validateEmail = (email: string): string | null => {
-  const valu = email.trim()
-  if (!valu) {
+  const value = email.trim()
+  if (!value) {
     return 'Veuillez entrer un email'
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(valu)) {
+  if (!emailRegex.test(value)) {
     return "Format d'email invalide"
   }
-  if (valu.length > 255) {
+  if (value.length > 255) {
     return "L'email est trop long"
   }
   return null
