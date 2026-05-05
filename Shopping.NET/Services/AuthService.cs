@@ -6,6 +6,7 @@ using Shopping.NET.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Shopping.NET.Services
 {
@@ -26,13 +27,26 @@ namespace Shopping.NET.Services
 
         public async Task<AuthResponseDto> Register(RegisterDto registerDto)
         {
+            var email = registerDto.Email.ToLower().Trim();
+            var username = registerDto.Username.ToLower().Trim();
             // Check if user already exists
-            var existingUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == registerDto.Email.ToLower().Trim());
-
-            if (existingUser != null)
+            if (await _dbContext.Users.AnyAsync(u => u.Email == email))
             {
-                // If user exists do nothing
-                throw new Exception("User already exists");
+                throw new Exception("Email déjà utilisé");
+            }
+
+            if (await _dbContext.Users.AnyAsync(u => u.Username == username))
+            {
+                throw new Exception("Nom d'utilisateur déjà pris");
+            }
+
+            // Password validation
+            if (!Regex.IsMatch(registerDto.Password, @"[A-Z]") ||
+                !Regex.IsMatch(registerDto.Password, @"[a-z]") ||
+                !Regex.IsMatch(registerDto.Password, @"[0-9]") ||
+                !Regex.IsMatch(registerDto.Password, @"[!@#$%^&*/]"))
+            {
+                throw new Exception("Mot de passe trop faible");
             }
 
             // Then create a new user
