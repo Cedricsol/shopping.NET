@@ -12,64 +12,89 @@ const registerValue = ref<RegisterDto>({
 })
 
 const message = ref<string | null>(null)
-const error = ref<string | null>(null)
+const errors = ref<Partial<Record<keyof RegisterDto, string | null>>>({})
 
-const validateRegister = () => {
-  const email = registerValue.value.email.trim()
-  if (!email) {
+const validateEmail = (email: string): string | null => {
+  const valu = email.trim()
+  if (!valu) {
     return 'Veuillez entrer un email'
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  if (!emailRegex.test(email)) {
+  if (!emailRegex.test(valu)) {
     return "Format d'email invalide"
   }
-  if (email.length > 255) {
+  if (valu.length > 255) {
     return "L'email est trop long"
   }
+  return null
+}
 
-  const username = registerValue.value.username.trim()
-  if (!username) {
+const validateUsername = (username: string): string | null => {
+  const value = username.trim()
+  if (!value) {
     return "Veuillez entrer un nom d'utilisateur"
   }
-  if (username.length < 3 || username.length > 50) {
+  if (value.length < 3 || value.length > 50) {
     return "Le nom d'utilisateur doit contenir entre 3 et 50 caractères"
   }
   const usernameRegex = /^[a-zA-Z0-9_-]+$/
-  if (!usernameRegex.test(username)) {
+  if (!usernameRegex.test(value)) {
     return "Caractères invalides dans le nom d'utilisateur"
   }
+  return null
+}
 
-  const password = registerValue.value.password.trim()
-  if (!password) {
+const validatePassword = (password: string): string | null => {
+  const value = password.trim()
+  if (!value) {
     return 'Veuillez entrer un mot de passe'
   }
-  if (password.length < 8) {
+  if (value.length < 8) {
     return 'Le mot de passe doit contenir au moins 8 caractères'
   }
-  if (!/[A-Z]/.test(password)) {
+  if (!/[A-Z]/.test(value)) {
     return 'Le mot de passe doit contenir une majuscule'
   }
-  if (!/[a-z]/.test(password)) {
+  if (!/[a-z]/.test(value)) {
     return 'Le mot de passe doit contenir une minuscule'
   }
-  if (!/[0-9]/.test(password)) {
+  if (!/[0-9]/.test(value)) {
     return 'Le mot de passe doit contenir un chiffre'
   }
-  if (!/[!@#$%^&*/]/.test(password)) {
+  if (!/[!@#$%^&*/]/.test(value)) {
     return 'Le mot de passe doit contenir un caractère spécial'
   }
-
   return null
+}
+
+const validateRegister = () => {
+  const newErrors: typeof errors.value = {}
+
+  const emailError = validateEmail(registerValue.value.email)
+  if (emailError) {
+    newErrors.email = emailError
+  }
+
+  const usernameError = validateUsername(registerValue.value.username)
+  if (usernameError) {
+    newErrors.username = usernameError
+  }
+
+  const passwordError = validatePassword(registerValue.value.password)
+  if (passwordError) {
+    newErrors.password = passwordError
+  }
+  errors.value = newErrors
+  return Object.keys(newErrors).length === 0
 }
 
 const submitRegister = async () => {
   message.value = null
-  error.value = null
+  errors.value = {}
 
-  const validateError = validateRegister()
+  const isValid = validateRegister()
 
-  if (validateError) {
-    error.value = validateError
+  if (!isValid) {
     return
   }
 
@@ -84,7 +109,7 @@ const submitRegister = async () => {
       password: '',
     }
   } catch (err: any) {
-    error.value = err
+    errors.value.email = err
   }
 }
 </script>
@@ -94,28 +119,36 @@ const submitRegister = async () => {
     <h1>Créer un compte</h1>
 
     <form @submit.prevent="submitRegister" class="form">
-      <input
-        data-testid="register-email"
-        v-model="registerValue.email"
-        type="text"
-        placeholder="Adresse email"
-      />
-      <input
-        data-testid="register-username"
-        v-model="registerValue.username"
-        type="text"
-        placeholder="Nom d'utilisateur"
-      />
-      <input
-        data-testid="register-password"
-        v-model="registerValue.password"
-        type="password"
-        placeholder="Mot de passe"
-      />
+      <div>
+        <input
+          data-testid="register-email"
+          v-model="registerValue.email"
+          type="text"
+          placeholder="Adresse email"
+        />
+        <p v-if="errors.email" class="error">{{ errors.email }}</p>
+      </div>
+      <div>
+        <input
+          data-testid="register-username"
+          v-model="registerValue.username"
+          type="text"
+          placeholder="Nom d'utilisateur"
+        />
+        <p v-if="errors.username" class="error">{{ errors.username }}</p>
+      </div>
+      <div>
+        <input
+          data-testid="register-password"
+          v-model="registerValue.password"
+          type="password"
+          placeholder="Mot de passe"
+        />
+        <p v-if="errors.password" class="error">{{ errors.password }}</p>
+      </div>
       <button type="submit">Créer un compte</button>
     </form>
     <p v-if="message" class="success">{{ message }}</p>
-    <p v-if="error" class="error">{{ error }}</p>
   </div>
 </template>
 
@@ -132,6 +165,8 @@ const submitRegister = async () => {
 }
 
 input {
+  width: 100%;
+  box-sizing: border-box;
   padding: 8px;
   border: 1px solid #ccc;
 }
