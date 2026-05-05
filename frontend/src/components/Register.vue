@@ -15,19 +15,49 @@ const message = ref<string | null>(null)
 const error = ref<string | null>(null)
 
 const validateRegister = () => {
-  if (!registerValue.value.email.trim()) {
+  const email = registerValue.value.email.trim()
+  if (!email) {
     return 'Veuillez entrer un email'
   }
-  // TODO : add other rules for email verification
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    return "Format d'email invalide"
+  }
+  if (email.length > 255) {
+    return "L'email est trop long"
+  }
 
-  if (!registerValue.value.username.trim()) {
+  const username = registerValue.value.username.trim()
+  if (!username) {
     return "Veuillez entrer un nom d'utilisateur"
   }
-
-  if (!registerValue.value.password.trim()) {
-    return 'Veuillez entrer un mot de passe contenant au moins un caractères sans espaces'
+  if (username.length < 3 || username.length > 50) {
+    return "Le nom d'utilisateur doit contenir entre 3 et 50 caractères"
   }
-  //TODO : add other rules for password
+  const usernameRegex = /^[a-zA-Z0-9_-]+$/
+  if (!usernameRegex.test(username)) {
+    return "Caractères invalides dans le nom d'utilisateur"
+  }
+
+  const password = registerValue.value.password.trim()
+  if (!password) {
+    return 'Veuillez entrer un mot de passe'
+  }
+  if (password.length < 8) {
+    return 'Le mot de passe doit contenir au moins 8 caractères'
+  }
+  if (!/[A-Z]/.test(password)) {
+    return 'Le mot de passe doit contenir une majuscule'
+  }
+  if (!/[a-z]/.test(password)) {
+    return 'Le mot de passe doit contenir une minuscule'
+  }
+  if (!/[0-9]/.test(password)) {
+    return 'Le mot de passe doit contenir un chiffre'
+  }
+  if (!/[!@#$%^&*/]/.test(password)) {
+    return 'Le mot de passe doit contenir un caractère spécial'
+  }
 
   return null
 }
