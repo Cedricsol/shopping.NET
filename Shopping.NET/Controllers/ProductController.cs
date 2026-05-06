@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Shopping.NET.DTOs;
 using Shopping.NET.Services;
 
@@ -14,6 +15,7 @@ namespace Shopping.NET.Controllers
            _productService  = service;
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public async Task<IActionResult> RegisterProduct([FromBody] CreateProductDto product)
         {
