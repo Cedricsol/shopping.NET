@@ -3,8 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Shopping.NET.DTOs;
+using Shopping.NET.Exceptions;
 using Shopping.NET.Models;
 using Shopping.NET.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Shopping.NET.Tests.Services
 {
@@ -39,7 +42,6 @@ namespace Shopping.NET.Tests.Services
         [Fact]
         public async Task Register_Should_Add_User_To_Db_And_Return_Token()
         {
-            // Setup
             var context = TestDbContextFactory.Create();
             var service = CreateService(context);
 
@@ -47,12 +49,11 @@ namespace Shopping.NET.Tests.Services
             {
                 Email = "test@test.com",
                 Username = "test",
-                Password = "test",
+                Password = "Test123&",
             };
 
             var result = await service.Register(user);
 
-            // Assert
             Assert.NotNull(result);
             Assert.NotEmpty(result.Token);
             Assert.Equal(user.Email.ToLower(), result.Email);
@@ -63,9 +64,27 @@ namespace Shopping.NET.Tests.Services
         }
 
         [Fact]
-        public async Task Register_Should_Throw_If_User_Already_Exists()
+        public async Task Register_Should_Normalize_Email_And_Username()
         {
-            // Setup
+            var context = TestDbContextFactory.Create();
+            var service = CreateService(context);
+
+            var registerDto = new RegisterDto
+            {
+                Email = " TEST@TEST.COM ",
+                Username = "  TestUser  ",
+                Password = "Test123&",
+            };
+
+            var result = await service.Register(registerDto);
+
+            Assert.Equal("test@test.com", result.Email);
+            Assert.Equal("testuser", result.Username);
+        }
+
+        [Fact]
+        public async Task Register_Should_Throw_If_Email_Already_Exists()
+        {
             var context = TestDbContextFactory.Create();
             context.Users.Add(new User
             {
@@ -79,11 +98,34 @@ namespace Shopping.NET.Tests.Services
             var user = new RegisterDto
             {
                 Email = "test@test.com",
-                Username = "test",
-                Password = "test",
+                Username = "user",
+                Password = "Test123&",
             };
 
-            await Assert.ThrowsAsync<Exception>(() => service.Register(user));
+            await Assert.ThrowsAsync<ApiException>(() => service.Register(user));
+        }
+
+        [Fact]
+        public async Task Register_Should_Throw_If_Username_Already_Exists()
+        {
+            var context = TestDbContextFactory.Create();
+            context.Users.Add(new User
+            {
+                Email = "test@test.com",
+                Username = "test",
+            });
+            await context.SaveChangesAsync();
+
+            var service = CreateService(context);
+
+            var user = new RegisterDto
+            {
+                Email = "other@test.com",
+                Username = "test",
+                Password = "Test123&",
+            };
+
+            await Assert.ThrowsAsync<ApiException>(() => service.Register(user));
         }
 
         [Fact]
@@ -127,7 +169,7 @@ namespace Shopping.NET.Tests.Services
                 Password = "test",
             };
 
-            await Assert.ThrowsAsync<Exception>(() => service.Login(loginDto));
+            await Assert.ThrowsAsync<ApiException>(() => service.Login(loginDto));
         }
 
         [Fact]
@@ -160,7 +202,50 @@ namespace Shopping.NET.Tests.Services
                 Password = "wrong password",
             };
 
-            await Assert.ThrowsAsync<Exception>(() => service.Login(loginDto));
+            await Assert.ThrowsAsync<ApiException>(() => service.Login(loginDto));
+        }
+
+        [Theory]
+        [InlineData("password")] // no upper case, digit nor special caracters
+        [InlineData("PASSWORD")] // no lower case, digit nor special caracters
+        [InlineData("Password")] // no digit nor special caracters
+        [InlineData("Password1")] // no special caracters
+        public async Task Register_Should_Throw_When_Password_Is_Weak(string password)
+        {
+            var context = TestDbContextFactory.Create();
+            var service = CreateService(context);
+
+            var registerDto = new RegisterDto
+            {
+                Email = "test@test.com",
+                Username = "test",
+                Password = password,
+            };
+
+            await Assert.ThrowsAnyAsync<ApiException>(() => service.Register(registerDto));
+        }
+
+        [Fact]
+        public async Task Register_Should_Generate_Valid_Jwt_With_Claims()
+        {
+            var context = TestDbContextFactory.Create();
+            var service = CreateService(context);
+
+            var registerDto = new RegisterDto
+            {
+                Email = "test@test.com",
+                Username = "test",
+                Password = "Test123&",
+            };
+
+            var result = await service.Register(registerDto);
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(result.Token);
+
+            Assert.Contains(jwt.Claims, c => c.Type == ClaimTypes.Email && c.Value == "test@test.com");
+            Assert.Contains(jwt.Claims, c => c.Type == ClaimTypes.Name && c.Value == "test");
+            Assert.Contains(jwt.Claims, c => c.Type == ClaimTypes.Role && c.Value == "User");
         }
 
         [Fact]
@@ -180,7 +265,25 @@ namespace Shopping.NET.Tests.Services
                 Password = "test"
             };
 
-            await Assert.ThrowsAsync<Exception>(() => service.Register(registerDto));
+            await Assert.ThrowsAsync<ApiException>(() => service.Register(registerDto));
+        }
+
+        [Fact]
+        public async Task Register_Should_Assign_Default_User_Role()
+        {
+            var context = TestDbContextFactory.Create();
+            var service = CreateService(context);
+
+            var registerDto = new RegisterDto
+            {
+                Email = "test@test.com",
+                Username = "test",
+                Password = "Test123&",
+            };
+
+            var result = await service.Register(registerDto);
+
+            Assert.Equal(UserRole.User, result.Role);
         }
     }
 }
