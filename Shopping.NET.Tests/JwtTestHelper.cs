@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,6 +12,16 @@ namespace Shopping.NET.Tests
     {
         public static string GenerateToken(string role)
         {
+            var configuration = new ConfigurationBuilder()
+                .AddUserSecrets<Program>()
+                .AddEnvironmentVariables()
+                .Build();
+
+            var key = configuration["Jwt:Key"];
+            var issuer = "ShoppingAPI";
+            var audience = "ShoppingClient";
+
+
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, "test"),
@@ -18,13 +29,13 @@ namespace Shopping.NET.Tests
                 new Claim(ClaimTypes.Role, role)
             };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("super_secret_key_for_testing_123456789"));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var securityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(key!));
+            var creds = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "test",
-                audience: "test",
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds

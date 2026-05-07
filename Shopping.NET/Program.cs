@@ -103,3 +103,5 @@ app.UseExceptionHandler(errorApp =>
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
