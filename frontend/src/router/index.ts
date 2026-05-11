@@ -37,8 +37,13 @@ const router = createRouter({
 router.beforeEach((to) => {
   const authStore = useAuthStore()
 
-  if (to.meta.requiresAdmin && !authStore.isAdmin) {
-    return '/login'
+  if (to.meta.requiresAdmin) {
+    if (!authStore.isAuthenticated) {
+      return '/login'
+    }
+    if (!authStore.isAdmin) {
+      return '/login'
+    }
   }
 
   return true
