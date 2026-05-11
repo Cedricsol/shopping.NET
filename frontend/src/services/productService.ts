@@ -7,9 +7,9 @@ export interface Product {
 }
 
 export function getProducts() {
-  return api.get<Product[]>('http://localhost:5039/api/products')
+  return api.get<Product[]>('/products')
 }
 
 export function postProduct(product: Product) {
-  return api.post('http://localhost:5039/api/products', product)
+  return api.post('/products', product)
 }
