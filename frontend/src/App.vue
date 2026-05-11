@@ -15,7 +15,7 @@ const authStore = useAuthStore()
         <RouterLink v-if="authStore.isAdmin" to="/addProduct"
           >Ajouter un produit à la boutique</RouterLink
         >
-        <RouterLink to="/login">Connectez-vous</RouterLink>
+        <RouterLink to="/login" data-testid="add-product-link">Connectez-vous</RouterLink>
       </nav>
     </div>
   </header>
