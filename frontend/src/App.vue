@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { useAuthStore } from './stores/authStore'
+
+const authStore = useAuthStore()
 </script>
 
 <template>
@@ -9,7 +12,9 @@ import { RouterLink, RouterView } from 'vue-router'
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Boutique</RouterLink>
-        <RouterLink to="/addProduct">Ajouter un produit à la boutique</RouterLink>
+        <RouterLink v-if="authStore.isAdmin" to="/addProduct"
+          >Ajouter un produit à la boutique</RouterLink
+        >
         <RouterLink to="/login">Connectez-vous</RouterLink>
       </nav>
     </div>
