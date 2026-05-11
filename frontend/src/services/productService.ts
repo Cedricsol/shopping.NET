@@ -1,4 +1,4 @@
-import axios from 'axios'
+import api from '@/api/api'
 
 export interface Product {
   name: string
@@ -7,9 +7,9 @@ export interface Product {
 }
 
 export function getProducts() {
-  return axios.get<Product[]>('http://localhost:5039/api/products')
+  return api.get<Product[]>('http://localhost:5039/api/products')
 }
 
 export function postProduct(product: Product) {
-  return axios.post('http://localhost:5039/api/products', product)
+  return api.post('http://localhost:5039/api/products', product)
 }
