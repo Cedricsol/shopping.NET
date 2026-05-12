@@ -51,7 +51,11 @@ const submitLogin = async () => {
     }
     router.push('/')
   } catch (err: any) {
-    error.value = err
+    if (err.status === 401) {
+      error.value = 'Email ou mot de passe incorrect'
+    } else {
+      error.value = err.message
+    }
   }
 }
 </script>

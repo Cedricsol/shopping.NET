@@ -43,12 +43,17 @@ export const useAuthStore = defineStore('auth', {
         setRole(this.role.toString())
       } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
-          const backendErrors = err.response?.data?.errors
-          if (backendErrors) {
-            throw Object.values(backendErrors).flat().join(', ')
+          throw {
+            message: err.response?.data?.message || 'Erreur lors de la connexion',
+            status: err.response?.status || 500,
+            code: err.response?.data?.code || 'UNKOWN_ERROR',
           }
         }
-        throw 'Erreur lors de la connexion'
+        throw {
+          message: 'Erreur inconnue',
+          status: 500,
+          code: 'UNKOWN_ERROR',
+        }
       }
     },
 
