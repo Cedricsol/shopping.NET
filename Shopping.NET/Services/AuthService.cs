@@ -33,12 +33,12 @@ namespace Shopping.NET.Services
             // Check if user already exists
             if (await _dbContext.Users.AnyAsync(u => u.Email == email))
             {
-                throw new ApiException("Email déjà utilisé", 400);
+                throw new ApiException("Email déjà utilisé", "EMAIL_ALREADY_USED", 400);
             }
 
             if (await _dbContext.Users.AnyAsync(u => u.Username == username))
             {
-                throw new ApiException("Nom d'utilisateur déjà pris", 400);
+                throw new ApiException("Nom d'utilisateur déjà pris", "USERNAME_ALREADY_TAKEN", 400);
             }
 
             // Password validation
@@ -47,7 +47,7 @@ namespace Shopping.NET.Services
                 !Regex.IsMatch(registerDto.Password, @"[0-9]") ||
                 !Regex.IsMatch(registerDto.Password, @"[!@#$%^&*/]"))
             {
-                throw new ApiException("Mot de passe trop faible", 400);
+                throw new ApiException("Mot de passe trop faible", "WEAK_PASSWORD", 400);
             }
 
             // Then create a new user
@@ -78,14 +78,15 @@ namespace Shopping.NET.Services
             var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email.ToLower().Trim());
             if (user == null)
             {
-                throw new ApiException("Invalid credentials", 401);
+                throw new ApiException("Email ou mot de passe incorrect", "INVALID_CREDENTIALS", 401);
             }
             var passwordCheck = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, loginDto.Password);
             if (passwordCheck == PasswordVerificationResult.Failed)
             {
                 // Wrong password
                 _logger.LogWarning("Failed login attempt for email {Email}", loginDto.Email);
-                throw new ApiException("Invalid credentials", 401);
+                throw new ApiException("Email ou mot de passe incorrect", "INVALID_CREDENTIALS", 401);
+
             }
             _logger.LogInformation("User logged in : {Email}", user.Email);
             var token = GenerateJwtToken(user);
@@ -111,7 +112,7 @@ namespace Shopping.NET.Services
             var keyString = _configuration["Jwt:Key"];
             if (string.IsNullOrEmpty(keyString))
             {
-                throw new ApiException("JWT Key is missing", 400);
+                throw new ApiException("JWT Key is missing", "JWT_KEY_MISSING", 400);
             }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
 

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Shopping.NET.DTOs;
 using Shopping.NET.Exceptions;
 using Shopping.NET.Models;
 using Shopping.NET.Services;
@@ -92,11 +93,25 @@ app.UseExceptionHandler(errorApp =>
         if (exception is ApiException apiEx)
         {
             context.Response.StatusCode = apiEx.StatusCode;
-            await context.Response.WriteAsJsonAsync(new { message = apiEx.Message });
+            await context.Response.WriteAsJsonAsync(
+                new ErrorRespondeDTO
+                { 
+                    Message = apiEx.Message,
+                    Code = apiEx.ErrorCode,
+                    Status = apiEx.StatusCode
+                }
+            );
             return;
         }
         context.Response.StatusCode = 500;
-        await context.Response.WriteAsJsonAsync(new { message = "Erreur interne serveur" });
+        await context.Response.WriteAsJsonAsync(
+            new ErrorRespondeDTO
+            { 
+                Message = "Erreur interne serveur",
+                Code = "INTERNAL_SERVER_ERROR",
+                Status = 500
+            }
+        );
     });
 });
 
