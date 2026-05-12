@@ -86,17 +86,18 @@ describe('authStore', () => {
     vi.spyOn(authService, 'login').mockRejectedValue({
       isAxiosError: true,
       response: {
+        status: 401,
         data: {
-          errors: {
-            email: ['Email invalide'],
-            password: ['Mot de passe requis'],
-          },
+          message: 'Email ou mot de passe incorrect',
+          code: 'INVALID_CREDENTIALS',
         },
       },
     })
-    await expect(store.loginUser({ email: '', password: '' })).rejects.toBe(
-      'Email invalide, Mot de passe requis',
-    )
+    await expect(store.loginUser({ email: '', password: '' })).rejects.toEqual({
+      message: 'Email ou mot de passe incorrect',
+      status: 401,
+      code: 'INVALID_CREDENTIALS',
+    })
   })
 
   it('should throw generic error when login fails', async () => {
@@ -104,9 +105,11 @@ describe('authStore', () => {
 
     vi.spyOn(authService, 'login').mockRejectedValue(new Error())
 
-    await expect(store.loginUser({ email: 'test', password: 'test' })).rejects.toBe(
-      'Erreur lors de la connexion',
-    )
+    await expect(store.loginUser({ email: 'test', password: 'test' })).rejects.toEqual({
+      message: 'Erreur inconnue',
+      status: 500,
+      code: 'UNKOWN_ERROR',
+    })
   })
 
   it('should clear user and token on logout', () => {

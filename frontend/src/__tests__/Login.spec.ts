@@ -70,7 +70,11 @@ describe('Login.vue', () => {
   })
 
   it('should display backend error', async () => {
-    const loginMock = vi.fn().mockRejectedValue('Erreur serveur')
+    const loginMock = vi.fn().mockRejectedValue({
+      message: 'Erreur serveur',
+      status: 500,
+      code: 'SERVER_ERROR',
+    })
 
     vi.mocked(useAuthStore).mockReturnValue({
       loginUser: loginMock,
@@ -79,7 +83,7 @@ describe('Login.vue', () => {
     const wrapper = mount(Login)
 
     await wrapper.find('[data-testid="login-email"]').setValue('test@test.com')
-    await wrapper.find('[data-testid="login-password').setValue('wrong password')
+    await wrapper.find('[data-testid="login-password"]').setValue('wrong password')
 
     await wrapper.find('form').trigger('submit.prevent')
     await flushPromises()
