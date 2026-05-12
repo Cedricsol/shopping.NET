@@ -1,8 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import axios from 'axios'
 import { getProducts, postProduct, type Product } from '@/services/productService'
+import api from '@/api/api'
 
-vi.mock('axios')
+vi.mock('@/api/api', () => ({
+  default: {
+    get: vi.fn(),
+    post: vi.fn(),
+  },
+}))
 
 describe('productService', () => {
   beforeEach(() => {
@@ -12,11 +17,11 @@ describe('productService', () => {
   it('Call GET /api/products', async () => {
     const mockData: Product[] = [{ name: 'Produit 1', price: 10, imageUrl: 'img1.jpg' }]
 
-    ;(axios.get as any).mockResolvedValueOnce({ data: mockData })
+    vi.mocked(api.get).mockResolvedValueOnce({ data: mockData })
 
     const response = await getProducts()
 
-    expect(axios.get).toHaveBeenCalledWith('http://localhost:5039/api/products')
+    expect(api.get).toHaveBeenCalledWith('/products')
     expect(response.data).toEqual(mockData)
   })
 
@@ -27,10 +32,10 @@ describe('productService', () => {
       imageUrl: 'img.jpg',
     }
 
-    ;(axios.post as any).mockResolvedValueOnce({ data: {} })
+    vi.mocked(api.post).mockResolvedValueOnce({ data: {} })
 
     await postProduct(product)
 
-    expect(axios.post).toHaveBeenCalledWith('http://localhost:5039/api/products', product)
+    expect(api.post).toHaveBeenCalledWith('/products', product)
   })
 })

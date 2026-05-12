@@ -1,11 +1,19 @@
 import {
   login,
   register,
+  UserRole,
   type AuthResponse,
   type LoginDto,
   type RegisterDto,
 } from '@/services/authService'
-import { getToken, removeToken, setToken } from '@/services/tokenService'
+import {
+  getRole,
+  getToken,
+  removeRole,
+  removeToken,
+  setRole,
+  setToken,
+} from '@/services/tokenService'
 import axios from 'axios'
 import { defineStore } from 'pinia'
 
@@ -13,10 +21,13 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as AuthResponse | null,
     token: getToken() as string | null,
+    role: getRole() as UserRole | null,
   }),
 
   getters: {
     isAuthenticated: (state) => !!state.token,
+
+    isAdmin: (state) => state.role === UserRole.Admin,
   },
 
   actions: {
@@ -26,8 +37,10 @@ export const useAuthStore = defineStore('auth', {
 
         this.user = response.data
         this.token = response.data.token
+        this.role = response.data.role
 
-        setToken(response.data.token)
+        setToken(this.token)
+        setRole(this.role.toString())
       } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
           const backendErrors = err.response?.data?.errors
@@ -54,7 +67,11 @@ export const useAuthStore = defineStore('auth', {
     },
 
     logout() {
-      ;((this.user = null), (this.token = null), removeToken())
+      this.user = null
+      this.token = null
+      this.role = null
+      removeToken()
+      removeRole()
     },
   },
 })

@@ -3,6 +3,7 @@ import ProductList from '@/components/ProductList.vue'
 import ProductForm from '@/components/ProductForm.vue'
 import Login from '@/components/Login.vue'
 import Register from '@/components/Register.vue'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,9 @@ const router = createRouter({
       path: '/addProduct',
       name: 'addProduct',
       component: ProductForm,
+      meta: {
+        requiresAdmin: true,
+      },
     },
     {
       path: '/login',
@@ -28,6 +32,21 @@ const router = createRouter({
       component: Register,
     },
   ],
+})
+
+router.beforeEach((to) => {
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAdmin) {
+    if (!authStore.isAuthenticated) {
+      return '/login'
+    }
+    if (!authStore.isAdmin) {
+      return '/login'
+    }
+  }
+
+  return true
 })
 
 export default router

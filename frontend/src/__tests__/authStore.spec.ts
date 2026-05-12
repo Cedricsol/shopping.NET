@@ -2,12 +2,17 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAuthStore } from '@/stores/authStore'
 import * as authService from '@/services/authService'
 import * as tokenService from '@/services/tokenService'
-import { isAxiosError, type InternalAxiosRequestConfig } from 'axios'
+import { type InternalAxiosRequestConfig } from 'axios'
 import { createPinia, setActivePinia } from 'pinia'
 
-vi.mock('@/services/authService', () => ({
-  login: vi.fn(),
-}))
+vi.mock('@/services/authService', async () => {
+  const actual = await vi.importActual('@/services/authService')
+  return {
+    ...actual,
+    login: vi.fn(),
+    register: vi.fn(),
+  }
+})
 
 describe('authStore', () => {
   beforeEach(() => {
@@ -35,6 +40,7 @@ describe('authStore', () => {
     vi.spyOn(authService, 'login').mockResolvedValueOnce(mockResponse)
 
     const setTokenSpy = vi.spyOn(tokenService, 'setToken')
+    const setRoleSpy = vi.spyOn(tokenService, 'setRole')
 
     await store.loginUser({
       email: 'test@test.com',
@@ -44,6 +50,34 @@ describe('authStore', () => {
     expect(store.user).toEqual(mockResponse.data)
     expect(store.token).toBe('token')
     expect(setTokenSpy).toHaveBeenCalledWith('token')
+    expect(setRoleSpy).toHaveBeenCalledWith('0')
+  })
+
+  it('should authenticate admin user correctly', async () => {
+    const store = useAuthStore()
+
+    vi.spyOn(authService, 'login').mockResolvedValueOnce({
+      data: {
+        token: 'token',
+        email: 'admin@test.com',
+        username: 'admin',
+        role: authService.UserRole.Admin,
+      },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {
+        headers: {},
+      } as InternalAxiosRequestConfig,
+    })
+
+    await store.loginUser({
+      email: 'admin@test.com',
+      password: 'admin',
+    })
+
+    expect(store.isAuthenticated).toBeTruthy()
+    expect(store.isAdmin).toBeTruthy()
   })
 
   it('should throw formatted backend errors on login', async () => {
@@ -82,12 +116,15 @@ describe('authStore', () => {
     store.token = 'token'
 
     const removeTokenSpy = vi.spyOn(tokenService, 'removeToken')
+    const removeRoleSpy = vi.spyOn(tokenService, 'removeRole')
 
     store.logout()
 
     expect(store.user).toBeNull()
     expect(store.token).toBeNull()
+    expect(store.role).toBeNull()
     expect(removeTokenSpy).toHaveBeenCalledOnce()
+    expect(removeRoleSpy).toHaveBeenCalledOnce()
   })
 
   it('should return true when token exists', () => {
@@ -102,5 +139,33 @@ describe('authStore', () => {
     store.token = null
 
     expect(store.isAuthenticated).toBeFalsy()
+  })
+
+  it('should return true when user is admin', () => {
+    const store = useAuthStore()
+
+    store.role = authService.UserRole.Admin
+
+    expect(store.isAdmin).toBeTruthy()
+  })
+
+  it('should return false when user is not admin', () => {
+    const store = useAuthStore()
+
+    store.role = authService.UserRole.User
+
+    expect(store.isAdmin).toBeFalsy()
+  })
+
+  it('should restore token and role from storage', () => {
+    vi.spyOn(tokenService, 'getToken').mockReturnValue('stored-token')
+    vi.spyOn(tokenService, 'getRole').mockReturnValue('Admin')
+
+    setActivePinia(createPinia()) // simulate refresh
+
+    const store = useAuthStore()
+
+    expect(store.token).toBe('stored-token')
+    expect(store.role).toBe('Admin')
   })
 })

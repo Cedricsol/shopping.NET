@@ -57,7 +57,10 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 
 var app = builder.Build();
 
@@ -100,3 +103,5 @@ app.UseExceptionHandler(errorApp =>
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
