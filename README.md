@@ -52,28 +52,32 @@ When adding a product, you can add an image. Images need to be placed under the 
 
 # Tests
 
-To run the backend tests, run the following commands from the root directory : 
+To run the backend tests, run the following commands from the root directory :
+
 ```
 cd Shopping.NET.Tests
 dotnet test
 ```
 
 To run the frontend tests, run the following command from the frontend directory :
+
 ```
 npm run test:unit
 ```
-
 
 # Technologies Used
 
 - ASP.NET Core
 - Entity Framework Core
+- ASP.NET Core Identity
 - SQL Server
 - Vue 3
+- Axios
+- Pinia
+- Vitest
 - Xunit
 
 # Remaining work to do
 
-- Add authentication so that only admins can add products
 - Add a cart
 - Image Uploading
