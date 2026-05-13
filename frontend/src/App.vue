@@ -7,7 +7,9 @@ const authStore = useAuthStore()
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <RouterLink class="logo-home" to="/">
+      <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    </RouterLink>
 
     <div class="wrapper">
       <nav>
@@ -28,6 +30,12 @@ header {
   background: linear-gradient(90deg, #ff4081, #7c4dff);
   padding: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 5);
+}
+
+.logo-home {
+  width: 50%;
+  display: flex;
+  align-items: center;
 }
 
 .logo {
