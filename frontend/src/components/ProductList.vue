@@ -9,6 +9,9 @@ const fetchProducts = async () => {
   try {
     const response = await getProducts()
     products.value = response.data
+    if (products.value.length === 0) {
+      error.value = 'La boutique ne contient aucun produit'
+    }
   } catch (err) {
     error.value = 'Erreur lors du chargement'
   }
@@ -44,7 +47,7 @@ onMounted(fetchProducts)
   <div class="container">
     <h1>Produits</h1>
 
-    <p v-if="products.length === 0">Chargement...</p>
+    <p v-if="products.length === 0 && !error">Chargement...</p>
     <p v-if="error">{{ error }}</p>
 
     <div class="grid">
